@@ -1,103 +1,168 @@
 /* ============================================================
    script.js — Birthday Website for Vishesh 🌹
-   Persistent background music across all 5 pages
+   ✅ Works on mobile (iOS + Android)
+   ✅ Persists across all pages
+   ✅ Doesn't conflict with voice note on page3
+   ✅ Shows tap-to-start overlay on first visit
    ============================================================ */
 
 (function () {
 
-  const SONG_SRC        = 'song.mp3';
-  const STORAGE_TIME    = 'bday_song_time';
-  const STORAGE_MUTED   = 'bday_song_muted';
-  const FADE_DURATION   = 1200; // ms for fade in
+  const SONG_SRC         = 'song.mp3';
+  const STORAGE_TIME     = 'bday_song_time';
+  const STORAGE_MUTED    = 'bday_song_muted';
+  const STORAGE_UNLOCKED = 'bday_unlocked';
 
-  /* ── Create the audio element ── */
-  const audio = document.createElement('audio');
-  audio.src   = SONG_SRC;
-  audio.loop  = true;
-  audio.volume = 0; // start at 0, fade in
-  document.body.appendChild(audio);
+  /* ── Create background audio ── */
+  const bgAudio   = document.createElement('audio');
+  bgAudio.src     = SONG_SRC;
+  bgAudio.loop    = true;
+  bgAudio.volume  = 0.5;
+  bgAudio.preload = 'auto';
+  bgAudio.muted   = true; /* iOS requires muted to allow programmatic play */
+  document.body.appendChild(bgAudio);
 
-  /* ── Restore mute preference ── */
-  const wasMuted = localStorage.getItem(STORAGE_MUTED) === 'true';
-  let   isMuted  = wasMuted;
+  /* ── State ── */
+  let isMuted    = localStorage.getItem(STORAGE_MUTED) === 'true';
+  let isUnlocked = localStorage.getItem(STORAGE_UNLOCKED) === 'true';
 
-  /* ── Restore playback position ── */
+  /* ── Restore timestamp ── */
   const savedTime = parseFloat(localStorage.getItem(STORAGE_TIME)) || 0;
-  audio.currentTime = savedTime;
 
-  /* ── Save timestamp every second so it survives page changes ── */
+  /* ── Save timestamp every second ── */
   setInterval(() => {
-    if (!audio.paused) {
-      localStorage.setItem(STORAGE_TIME, audio.currentTime);
+    if (!bgAudio.paused) {
+      localStorage.setItem(STORAGE_TIME, bgAudio.currentTime);
     }
   }, 1000);
 
-  /* ── Fade in helper ── */
-  function fadeIn(targetVolume) {
+  /* ── Fade in volume ── */
+  function fadeIn() {
+    if (isMuted) return;
+    bgAudio.muted  = false;
+    bgAudio.volume = 0;
     let vol = 0;
-    const step = targetVolume / (FADE_DURATION / 30);
-    const interval = setInterval(() => {
-      vol = Math.min(vol + step, targetVolume);
-      audio.volume = vol;
-      if (vol >= targetVolume) clearInterval(interval);
-    }, 30);
+    const iv = setInterval(() => {
+      vol = Math.min(vol + 0.03, 0.5);
+      bgAudio.volume = vol;
+      if (vol >= 0.5) clearInterval(iv);
+    }, 40);
   }
 
-  /* ── Attempt autoplay ── */
-  function startMusic() {
-    if (isMuted) {
-      audio.volume = 0;
-      audio.play().catch(() => {});
-      return;
+  /* ── Actually start playing ── */
+  function startPlaying() {
+    try { bgAudio.currentTime = savedTime; } catch(e) {}
+    bgAudio.play().then(() => {
+      fadeIn();
+      localStorage.setItem(STORAGE_UNLOCKED, 'true');
+      isUnlocked = true;
+      removeOverlay();
+    }).catch(() => {});
+  }
+
+  /* ── Unlock on ANY user gesture ── */
+  function unlockAndPlay() {
+    if (isUnlocked) return;
+    startPlaying();
+  }
+
+  /* ── Tap-to-start overlay (solves mobile autoplay block) ── */
+  function createOverlay() {
+    if (isUnlocked) return;
+    const ov = document.createElement('div');
+    ov.id = 'musicUnlockOverlay';
+    ov.innerHTML = `
+      <div id="musicUnlockBox">
+        <div id="musicUnlockNote">🎵</div>
+        <p id="musicUnlockTitle">Tap to begin</p>
+        <p id="musicUnlockSub">Let the music play for Vishesh 🌹</p>
+      </div>
+    `;
+    document.body.appendChild(ov);
+    ov.addEventListener('click', () => { startPlaying(); }, { once: true });
+  }
+
+  function removeOverlay() {
+    const ov = document.getElementById('musicUnlockOverlay');
+    if (ov) {
+      ov.style.opacity = '0';
+      ov.style.pointerEvents = 'none';
+      setTimeout(() => ov.remove(), 600);
     }
-    audio.play().then(() => {
-      fadeIn(0.55);
-    }).catch(() => {
-      /* Autoplay blocked — wait for first user interaction */
-      const unlock = () => {
-        audio.play().then(() => {
-          if (!isMuted) fadeIn(0.55);
-        }).catch(() => {});
-        document.removeEventListener('click',     unlock);
-        document.removeEventListener('touchstart', unlock);
-      };
-      document.addEventListener('click',      unlock, { once: true });
-      document.addEventListener('touchstart', unlock, { once: true });
-    });
   }
 
-  /* ── Mute / Unmute toggle ── */
+  /* ── Mute / Unmute ── */
   function toggleMute() {
     isMuted = !isMuted;
     localStorage.setItem(STORAGE_MUTED, isMuted);
-
     const btn  = document.getElementById('musicToggleBtn');
     const icon = document.getElementById('musicIcon');
-
     if (isMuted) {
-      audio.volume = 0;
+      bgAudio.volume = 0;
+      bgAudio.muted  = true;
       if (icon) icon.textContent = '🔇';
-      if (btn)  btn.setAttribute('aria-label', 'Unmute music');
       if (btn)  btn.classList.add('muted');
     } else {
-      fadeIn(0.55);
+      bgAudio.muted = false;
+      fadeIn();
       if (icon) icon.textContent = '🎵';
-      if (btn)  btn.setAttribute('aria-label', 'Mute music');
       if (btn)  btn.classList.remove('muted');
     }
   }
 
-  /* ── Wire up the toggle button (injected by style.css html) ── */
+  /* ── Init on DOM ready ── */
   window.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('musicToggleBtn');
+
+    /* Wire up toggle button */
+    const btn  = document.getElementById('musicToggleBtn');
+    const icon = document.getElementById('musicIcon');
     if (btn) {
-      const icon = document.getElementById('musicIcon');
-      /* Set correct initial icon */
       if (icon) icon.textContent = isMuted ? '🔇' : '🎵';
       if (isMuted) btn.classList.add('muted');
-      btn.addEventListener('click', toggleMute);
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!isUnlocked) startPlaying();
+        toggleMute();
+      });
     }
-    startMusic();
+
+    /* If already unlocked (navigated from another page) — just play */
+    if (isUnlocked) {
+      bgAudio.play().then(() => {
+        if (!isMuted) fadeIn();
+        else bgAudio.muted = true;
+      }).catch(() => {
+        document.addEventListener('click',      unlockAndPlay, { once: true });
+        document.addEventListener('touchstart', unlockAndPlay, { once: true });
+      });
+    } else {
+      /* First visit — try silent autoplay for desktop */
+      bgAudio.play().then(() => {
+        if (!isMuted) fadeIn();
+        localStorage.setItem(STORAGE_UNLOCKED, 'true');
+        isUnlocked = true;
+      }).catch(() => {
+        /* Mobile blocked — show pretty tap overlay */
+        createOverlay();
+        document.addEventListener('click',      unlockAndPlay, { once: true });
+        document.addEventListener('touchstart', unlockAndPlay, { once: true });
+      });
+    }
+
+    /* ── Page 3: duck bg music when voice note plays, restore after ── */
+    const voiceAudio = document.getElementById('voiceAudio');
+    if (voiceAudio) {
+      voiceAudio.addEventListener('play', () => {
+        bgAudio.volume = 0.08;
+      });
+      voiceAudio.addEventListener('pause', () => {
+        if (!isMuted) fadeIn();
+      });
+      voiceAudio.addEventListener('ended', () => {
+        if (!isMuted) fadeIn();
+      });
+    }
+
   });
 
 })();
