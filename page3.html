@@ -454,7 +454,7 @@
       </div>
 
       <!-- Hidden audio -->
-      <audio id="voiceAudio" preload="metadata">
+      <audio id="voiceAudio" preload="metadata" playsinline webkit-playsinline>
         <source src="voice-note.mp3" type="audio/mpeg"/>
       </audio>
 
@@ -582,4 +582,3 @@
       notesWrap.appendChild(el);
       setTimeout(() => el.remove(), 16000);
     }
-    for (let i = 0; i < 12; i++)
