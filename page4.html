@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A Letter for Vishesh 💌</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;600&family=Dancing+Script:wght@500;600;700&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --blush:      #f7c5d0;
+      --rose:       #e8a0b0;
+      --deep-rose:  #c0637a;
+      --rose-gold:  #b76e79;
+      --gold:       #d4a96a;
+      --light-gold: #f0d9b5;
+      --cream:      #fff5f7;
+      --paper:      #fffaf8;
+      --dark:       #3a1a22;
+      --ink:        #2e1418;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; min-height: 100%;
+      overflow-x: hidden;
+      background: var(--cream);
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--dark);
+      cursor: none;
+    }
+
+    /* ── Cursor ── */
+    .cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: radial-gradient(circle, #e8a0b0cc, #b76e7988);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      mix-blend-mode: multiply;
+    }
+
+    /* ── Background ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 10%, #fce4ec99 0%, transparent 55%),
+        radial-gradient(ellipse 55% 65% at 90% 90%, #f8bbd066 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 50% 50%, #fff5f7 0%, #fce4ec 100%);
+    }
+
+    /* ── Canvases ── */
+    #petalCanvas, #glitterCanvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    #petalCanvas   { z-index: 1; }
+    #glitterCanvas { z-index: 2; }
+
+    /* ── Floating hearts ── */
+    .hearts-wrap {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 3;
+      overflow: hidden;
+    }
+    .heart {
+      position: absolute; bottom: -60px;
+      opacity: 0;
+      animation: heartFloat linear infinite;
+    }
+    @keyframes heartFloat {
+      0%   { opacity: 0; transform: translateY(0) rotate(-8deg); }
+      8%   { opacity: .9; }
+      90%  { opacity: .35; }
+      100% { opacity: 0; transform: translateY(-110vh) rotate(8deg); }
+    }
+
+    /* ── Page ── */
+    .page {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 64px 20px 100px;
+    }
+
+    /* ── Header ── */
+    .section-label {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      color: var(--rose-gold);
+      letter-spacing: .08em;
+      opacity: 0;
+      animation: fadeUp .8s .1s ease forwards;
+    }
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-align: center;
+      background: linear-gradient(135deg, var(--deep-rose) 0%, var(--gold) 55%, var(--rose-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 14px #e8a0b044);
+      margin: 8px 0 6px;
+      opacity: 0;
+      animation: fadeUp .9s .25s ease forwards;
+    }
+    .divider {
+      margin: 14px auto 48px;
+      opacity: 0;
+      animation: fadeUp .8s .4s ease forwards;
+    }
+    .divider svg { width: 260px; max-width: 85vw; }
+
+    /* ── Letter paper ── */
+    .letter-paper {
+      position: relative;
+      width: min(720px, 94vw);
+      background: var(--paper);
+      border-radius: 2px;
+      padding: 64px 68px 72px;
+      box-shadow:
+        0 2px 0 #d4a96a22,
+        0 16px 56px #c0637a18,
+        0 4px 16px #00000012,
+        inset 0 0 0 1px #f0e0e8;
+      opacity: 0;
+      animation: letterReveal 1.1s .6s cubic-bezier(.16,1,.3,1) forwards;
+
+      /* ruled lines */
+      background-image:
+        linear-gradient(transparent calc(2.2rem - 1px), #f0d9b555 calc(2.2rem - 1px), #f0d9b555 2.2rem, transparent 2.2rem);
+      background-size: 100% 2.2rem;
+      background-position: 0 3.5rem;
+    }
+
+    /* Left margin red line */
+    .letter-paper::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; left: 88px;
+      width: 1.5px;
+      background: linear-gradient(180deg, transparent 3%, #e8a0b055 15%, #e8a0b055 85%, transparent 97%);
+    }
+
+    /* Corner fold */
+    .letter-paper::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 0 42px 42px 0;
+      border-color: transparent var(--blush) transparent transparent;
+      filter: drop-shadow(-2px 2px 4px #00000010);
+    }
+
+    /* ── Wax seal ── */
+    .wax-seal {
+      position: absolute;
+      bottom: -28px; right: 48px;
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, #d4566e, #8b1a2e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 4px 18px #8b1a2e55, inset 0 -2px 6px #00000033;
+      z-index: 5;
+    }
+
+    /* ── Letter content ── */
+    .letter-date {
+      font-family: 'Caveat', cursive;
+      font-size: 1.05rem;
+      color: var(--rose-gold);
+      text-align: right;
+      margin-bottom: 28px;
+      margin-left: 48px;
+      letter-spacing: .04em;
+    }
+
+    .letter-greeting {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--deep-rose);
+      line-height: 1.2;
+      margin-left: 48px;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp .8s 1s ease forwards;
+    }
+
+    .letter-body {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.25rem, 2.8vw, 1.65rem);
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 2.2rem;
+      margin-left: 48px;
+    }
+
+    .letter-body p {
+      margin-bottom: 0;
+      opacity: 0;
+    }
+
+    /* staggered line reveals */
+    .letter-body p:nth-child(1)  { animation: fadeUp .7s 1.1s ease forwards; }
+    .letter-body p:nth-child(2)  { animation: fadeUp .7s 1.25s ease forwards; }
+    .letter-body p:nth-child(3)  { animation: fadeUp .7s 1.4s ease forwards; }
+    .letter-body p:nth-child(4)  { animation: fadeUp .7s 1.55s ease forwards; }
+    .letter-body p:nth-child(5)  { animation: fadeUp .7s 1.7s ease forwards; }
+    .letter-body p:nth-child(6)  { animation: fadeUp .7s 1.85s ease forwards; }
+    .letter-body p:nth-child(7)  { animation: fadeUp .7s 2s ease forwards; }
+    .letter-body p:nth-child(8)  { animation: fadeUp .7s 2.15s ease forwards; }
+    .letter-body p:nth-child(9)  { animation: fadeUp .7s 2.3s ease forwards; }
+    .letter-body p:nth-child(10) { animation: fadeUp .7s 2.45s ease forwards; }
+    .letter-body p:nth-child(11) { animation: fadeUp .7s 2.6s ease forwards; }
+
+    /* special lines */
+    .letter-body .highlight {
+      color: var(--deep-rose);
+      font-weight: 700;
+      font-size: clamp(1.4rem, 3.2vw, 1.95rem);
+    }
+    .letter-body .special {
+      font-size: clamp(1.35rem, 3vw, 1.85rem);
+      font-weight: 700;
+      background: linear-gradient(120deg, var(--deep-rose), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .letter-body .big-love {
+      font-size: clamp(1.6rem, 4vw, 2.3rem);
+      font-weight: 700;
+      color: var(--deep-rose);
+      line-height: 2.2rem;
+    }
+    .letter-body .devil-line {
+      font-style: italic;
+      color: #7a3040;
+      font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+    }
+    .letter-body .spacer { margin-top: 1.1rem; display: block; }
+    .letter-body .ending { margin-top: 1.4rem; display: block; font-weight: 600; }
+
+    /* ── Signature ── */
+    .letter-sign {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: var(--rose-gold);
+      margin-top: 28px;
+      margin-left: 48px;
+      opacity: 0;
+      animation: fadeUp .8s 2.8s ease forwards;
+      display: block;
+    }
+    .letter-sign span {
+      background: linear-gradient(120deg, var(--deep-rose), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Little doodles ── */
+    .doodle-hearts {
+      position: absolute;
+      top: 24px; left: 20px;
+      font-size: .95rem;
+      opacity: .5;
+      line-height: 1.8;
+      color: var(--rose);
+      font-family: serif;
+      animation: fadeUp .8s 1.5s ease forwards;
+      opacity: 0;
+    }
+
+    /* ── Nav ── */
+    .nav-row {
+      margin-top: 56px;
+      display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+      opacity: 0;
+      animation: fadeUp .8s 3s ease forwards;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 13px 36px;
+      font-family: 'Cinzel', serif;
+      font-size: .78rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 1px;
+      transition: transform .3s ease, box-shadow .3s ease;
+      cursor: pointer;
+    }
+    .nav-btn.primary {
+      color: var(--cream);
+      background: linear-gradient(135deg, var(--deep-rose), var(--rose-gold), var(--gold));
+      background-size: 200% 200%;
+      animation: gradShift 3s 2s ease infinite;
+      box-shadow: 0 4px 24px #c0637a44;
+    }
+    .nav-btn.ghost {
+      color: var(--rose-gold);
+      border: 1px solid #d4a96a88;
+      background: transparent;
+    }
+    .nav-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px #c0637a44; }
+
+    /* ── Transition overlay ── */
+    .transition-overlay {
+      position: fixed; inset: 0; z-index: 9990;
+      background: linear-gradient(135deg, var(--blush), var(--rose-gold));
+      transform: scaleY(0); transform-origin: bottom;
+      pointer-events: none;
+    }
+    .transition-overlay.active {
+      animation: curtainIn .7s cubic-bezier(.77,0,.18,1) forwards;
+    }
+
+    /* ── Keyframes ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes letterReveal {
+      from { opacity: 0; transform: translateY(50px) rotate(-1.5deg) scale(.96); }
+      to   { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+    }
+    @keyframes curtainIn {
+      from { transform: scaleY(0); transform-origin: bottom; }
+      to   { transform: scaleY(1); transform-origin: bottom; }
+    }
+    @keyframes gradShift {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+
+    @media (max-width: 600px) {
+      .letter-paper { padding: 48px 28px 60px; }
+      .letter-paper::before { left: 52px; }
+      .letter-greeting,
+      .letter-body,
+      .letter-sign { margin-left: 18px; }
+      .wax-seal { right: 20px; }
+    }
+  </style>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="transition-overlay" id="overlay"></div>
+  <canvas id="petalCanvas"></canvas>
+  <canvas id="glitterCanvas"></canvas>
+  <div class="hearts-wrap" id="heartsWrap"></div>
+
+  <main class="page">
+
+    <p class="section-label">✦ written with my whole heart ✦</p>
+    <h2 class="section-title">MY LETTER TO YOU</h2>
+
+    <div class="divider">
+      <svg viewBox="0 0 260 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="10" x2="98" y2="10" stroke="#d4a96a" stroke-width=".8" opacity=".7"/>
+        <circle cx="110" cy="10" r="3" fill="#d4a96a" opacity=".85"/>
+        <circle cx="130" cy="10" r="5.5" fill="#d4a96a"/>
+        <circle cx="150" cy="10" r="3" fill="#d4a96a" opacity=".85"/>
+        <line x1="162" y1="10" x2="260" y2="10" stroke="#d4a96a" stroke-width=".8" opacity=".7"/>
+      </svg>
+    </div>
+
+    <!-- Letter paper -->
+    <div class="letter-paper">
+
+      <!-- Tiny doodles top left -->
+      <div class="doodle-hearts">
+        ♡ ♡<br/>♡
+      </div>
+
+      <!-- Corner fold tooltip -->
+      <div class="letter-date">25th February 2026 💌</div>
+
+      <div class="letter-greeting">
+        Hello babyyyy,<br/>
+        Happy Birthday 🥳🌹
+      </div>
+
+      <div class="letter-body">
+
+        <p>So this was a cute lil surprise for you —</p>
+        <p>made with all the love I have, just for <em>you.</em> ✨</p>
+
+        <p class="spacer">We know that things messed up so many times</p>
+        <p>between us… but we always handled it.</p>
+
+        <p class="highlight spacer">Not me — it's YOU. 💪</p>
+
+        <p class="special spacer">The man I am super proud of.</p>
+        <p class="special">The best decision of my life.</p>
+
+        <p class="spacer">Everything you did for me,</p>
+        <p>and everything you are doing for me —</p>
+        <p>is so much more than what I deserve. 🥺</p>
+
+        <p class="big-love spacer">I love you to the moon and back. 🌙</p>
+
+        <p class="devil-line spacer">
+          If the devil ever looked into your eyes,<br/>
+          he'd kiss your forehead —<br/>
+          and start believing in love. 🖤
+        </p>
+
+        <p class="ending spacer">Keep smiling always, Vishesh. 🌹</p>
+        <p>And I pray you never, ever lose your spark. ✨🌟</p>
+
+        <p class="poem-divider" style="margin-top:1.6rem;color:#d4a96a;letter-spacing:.3em;opacity:.7;">· · ·</p>
+
+        <p class="poem-block" style="margin-top:1.2rem;font-style:italic;font-size:clamp(1.1rem,2.4vw,1.45rem);line-height:2.2rem;color:#5a2030;opacity:0;animation:fadeUp .8s 2.65s ease forwards;">
+          <span style="display:block;">You are the kind of person</span>
+          <span style="display:block;">that the universe writes poems about —</span>
+          <span style="display:block;">the one the stars lean down to watch,</span>
+          <span style="display:block;">the one the moon stays up late for.</span>
+          <span style="display:block;margin-top:.8rem;">In every lifetime I could ever live,</span>
+          <span style="display:block;">I would find you.</span>
+          <span style="display:block;">I would choose you.</span>
+          <span style="display:block;">Every. Single. Time. 🌙✨</span>
+        </p>
+
+      </div>
+
+      <span class="letter-sign">— forever yours, <span>Zeba</span> 💕</span>
+
+      <!-- Wax seal -->
+      <div class="wax-seal">🌹</div>
+
+    </div>
+
+    <!-- Nav -->
+    <div class="nav-row">
+      <a href="page3.html" class="nav-btn ghost" id="backBtn">← Back</a>
+      <a href="page5.html" class="nav-btn primary" id="nextBtn">Last Surprise ✦</a>
+    </div>
+
+  </main>
+
+  <script>
+    /* ── Cursor ── */
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+
+    /* ── Canvas setup ── */
+    const petalCanvas   = document.getElementById('petalCanvas');
+    const glitterCanvas = document.getElementById('glitterCanvas');
+    const pCtx = petalCanvas.getContext('2d');
+    const gCtx = glitterCanvas.getContext('2d');
+    function resizeCanvases() {
+      petalCanvas.width = glitterCanvas.width = window.innerWidth;
+      petalCanvas.height = glitterCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
+
+    /* ── Petals ── */
+    const petalColors = ['#f7c5d0','#e8a0b0','#d4a96a','#f0d9b5','#fce4ec','#b76e79'];
+    let petals = [];
+    function createPetal() {
+      return {
+        x: Math.random() * petalCanvas.width, y: -20,
+        r: 6 + Math.random() * 10,
+        color: petalColors[Math.floor(Math.random() * petalColors.length)],
+        speed: .5 + Math.random() * 1.1,
+        wind: (Math.random() - .5) * .7,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - .5) * .05,
+        opacity: .45 + Math.random() * .5,
+      };
+    }
+    for (let i = 0; i < 38; i++) { const p = createPetal(); p.y = Math.random() * petalCanvas.height; petals.push(p); }
+    function animatePetals() {
+      pCtx.clearRect(0, 0, petalCanvas.width, petalCanvas.height);
+      petals.forEach((p, i) => {
+        p.y += p.speed; p.x += p.wind + Math.sin(p.angle * 2) * .35; p.angle += p.spin;
+        if (p.y > petalCanvas.height + 20) petals[i] = createPetal();
+        pCtx.save(); pCtx.translate(p.x, p.y); pCtx.rotate(p.angle);
+        pCtx.globalAlpha = p.opacity;
+        pCtx.beginPath(); pCtx.ellipse(0, 0, p.r, p.r * .55, 0, 0, Math.PI * 2);
+        pCtx.fillStyle = p.color; pCtx.fill(); pCtx.restore();
+      });
+      requestAnimationFrame(animatePetals);
+    }
+    animatePetals();
+
+    /* ── Glitter ── */
+    let sparkles = [];
+    function createSparkle() {
+      return {
+        x: Math.random() * glitterCanvas.width, y: Math.random() * glitterCanvas.height,
+        r: .5 + Math.random() * 2.5, life: 0,
+        maxLife: 40 + Math.random() * 60,
+        color: ['#d4a96a','#f0d9b5','#f7c5d0','#ffffff','#b76e79'][Math.floor(Math.random()*5)],
+      };
+    }
+    for (let i = 0; i < 80; i++) sparkles.push(createSparkle());
+    function animateGlitter() {
+      gCtx.clearRect(0, 0, glitterCanvas.width, glitterCanvas.height);
+      sparkles.forEach((s, i) => {
+        s.life++;
+        const alpha = s.life / s.maxLife < .5 ? (s.life / s.maxLife) * 2 : (1 - s.life / s.maxLife) * 2;
+        gCtx.save(); gCtx.globalAlpha = alpha * .85; gCtx.fillStyle = s.color;
+        gCtx.shadowColor = s.color; gCtx.shadowBlur = 6;
+        gCtx.beginPath();
+        for (let j = 0; j < 8; j++) {
+          const rad = j % 2 === 0 ? s.r : s.r * .4;
+          const ang = (j * Math.PI) / 4;
+          j === 0 ? gCtx.moveTo(s.x + rad * Math.cos(ang), s.y + rad * Math.sin(ang))
+                  : gCtx.lineTo(s.x + rad * Math.cos(ang), s.y + rad * Math.sin(ang));
+        }
+        gCtx.closePath(); gCtx.fill(); gCtx.restore();
+        if (s.life >= s.maxLife) sparkles[i] = createSparkle();
+      });
+      requestAnimationFrame(animateGlitter);
+    }
+    animateGlitter();
+
+    /* ── Floating hearts ── */
+    const heartsWrap = document.getElementById('heartsWrap');
+    const heartSymbols = ['💕','🌹','💖','✨','💝','🌸','💗','❤️'];
+    function spawnHeart() {
+      const el = document.createElement('div');
+      el.className = 'heart';
+      el.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+      el.style.cssText = `
+        left: ${4 + Math.random() * 92}%;
+        font-size: ${0.85 + Math.random() * 1.3}rem;
+        animation-duration: ${7 + Math.random() * 9}s;
+        animation-delay: ${Math.random() * 4}s;
+      `;
+      heartsWrap.appendChild(el);
+      setTimeout(() => el.remove(), 15000);
+    }
+    for (let i = 0; i < 12; i++) setTimeout(spawnHeart, i * 700);
+    setInterval(spawnHeart, 2000);
+
+    /* ── Page transitions ── */
+    const overlay = document.getElementById('overlay');
+    function navigateTo(href) {
+      overlay.classList.add('active');
+      setTimeout(() => window.location.href = href, 700);
+    }
+    document.getElementById('nextBtn').addEventListener('click', e => { e.preventDefault(); navigateTo(e.currentTarget.href); });
+    document.getElementById('backBtn').addEventListener('click', e => { e.preventDefault(); navigateTo(e.currentTarget.href); });
+  </script>
+  <button id="musicToggleBtn" aria-label="Mute music"><span id="musicIcon">🎵</span></button>
+  <script src="script.js"></script>
+</body>
+</html>

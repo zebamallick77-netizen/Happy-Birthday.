@@ -1,0 +1,144 @@
+/* ============================================================
+   style.css — Birthday Website for Vishesh 🌹
+   Floating music button — consistent across all 5 pages
+   ============================================================ */
+
+/* ── Import fonts (fallback if individual pages don't load them) ── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;600&family=Dancing+Script:wght@500;600;700&family=Caveat:wght@400;500;600;700&display=swap');
+
+/* ============================================================
+   FLOATING MUSIC TOGGLE BUTTON
+   ============================================================ */
+
+#musicToggleBtn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9995;
+
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+
+  /* Rose gold gradient */
+  background: linear-gradient(135deg, #c0637a, #b76e79, #d4a96a);
+  background-size: 200% 200%;
+  animation: musicBtnGrad 4s ease infinite;
+
+  /* Shadow & glow */
+  box-shadow:
+    0 4px 20px #c0637a55,
+    0 1px 4px #00000022;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Smooth entrance */
+  opacity: 0;
+  transform: scale(0) rotate(-180deg);
+  animation:
+    musicBtnGrad  4s   1s   ease    infinite,
+    musicBtnEntry .7s  .8s  cubic-bezier(.34,1.56,.64,1) forwards;
+
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+#musicToggleBtn:hover {
+  transform: scale(1.12);
+  box-shadow:
+    0 8px 32px #c0637a77,
+    0 2px 8px #00000033;
+}
+
+/* Muted state — desaturated */
+#musicToggleBtn.muted {
+  background: linear-gradient(135deg, #c8a0a8, #c0b0b4, #d4c4a8);
+  box-shadow: 0 4px 16px #00000022;
+}
+
+/* Icon inside */
+#musicIcon {
+  font-size: 1.45rem;
+  line-height: 1;
+  display: block;
+  /* Gentle pulse when playing */
+  animation: musicIconPulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+#musicToggleBtn.muted #musicIcon {
+  animation: none;
+}
+
+/* Ripple ring when playing */
+#musicToggleBtn:not(.muted)::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid #d4a96a66;
+  animation: musicRipple 2s ease-out infinite;
+  pointer-events: none;
+}
+#musicToggleBtn:not(.muted)::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 1px solid #d4a96a33;
+  animation: musicRipple 2s .5s ease-out infinite;
+  pointer-events: none;
+}
+
+/* Tooltip on hover */
+#musicToggleBtn[data-tooltip]::after {
+  /* override ripple if tooltip attr present — kept separate */
+  content: attr(data-tooltip);
+}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+
+@keyframes musicBtnGrad {
+  0%,100% { background-position: 0%   50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+@keyframes musicBtnEntry {
+  from { opacity: 0; transform: scale(0) rotate(-180deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg);    }
+}
+
+@keyframes musicIconPulse {
+  0%,100% { transform: scale(1);    }
+  50%      { transform: scale(1.18); }
+}
+
+@keyframes musicRipple {
+  0%   { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+/* ============================================================
+   GLOBAL SHARED UTILITIES
+   (safe to have here — pages have their own variables too)
+   ============================================================ */
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* Selection color */
+::selection {
+  background: #f7c5d088;
+  color: #3a1a22;
+}
+
+/* Focus outline for accessibility */
+:focus-visible {
+  outline: 2px solid #d4a96a;
+  outline-offset: 3px;
+}

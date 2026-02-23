@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A Message for Vishesh 🎵</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;600&family=Dancing+Script:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --blush:      #f7c5d0;
+      --rose:       #e8a0b0;
+      --deep-rose:  #c0637a;
+      --rose-gold:  #b76e79;
+      --gold:       #d4a96a;
+      --light-gold: #f0d9b5;
+      --cream:      #fff5f7;
+      --dark:       #3a1a22;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; min-height: 100%;
+      overflow-x: hidden;
+      background: var(--cream);
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--dark);
+      cursor: none;
+    }
+
+    /* ── Cursor ── */
+    .cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: radial-gradient(circle, #e8a0b0cc, #b76e7988);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      mix-blend-mode: multiply;
+    }
+
+    /* ── Background mesh ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 15%, #fce4ec99 0%, transparent 55%),
+        radial-gradient(ellipse 60% 70% at 85% 85%, #f8bbd066 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 50% 50%, #fff5f7 0%, #fce4ec 100%);
+    }
+
+    /* ── Canvases ── */
+    #petalCanvas, #glitterCanvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    #petalCanvas   { z-index: 1; }
+    #glitterCanvas { z-index: 2; }
+
+    /* ── Floating music notes ── */
+    .notes-wrap {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 3;
+      overflow: hidden;
+    }
+    .music-note {
+      position: absolute;
+      bottom: -60px;
+      font-size: 1.4rem;
+      opacity: 0;
+      animation: noteFloat linear infinite;
+    }
+    @keyframes noteFloat {
+      0%   { opacity: 0; transform: translateY(0) rotate(-10deg) scale(.8); }
+      10%  { opacity: .85; }
+      50%  { transform: translateY(-45vh) rotate(12deg) scale(1.1); }
+      90%  { opacity: .4; }
+      100% { opacity: 0; transform: translateY(-105vh) rotate(-8deg) scale(.7); }
+    }
+
+    /* ── Page ── */
+    .page {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 70px 24px 90px;
+      gap: 0;
+    }
+
+    /* ── Top label ── */
+    .section-label {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1rem, 3vw, 1.35rem);
+      color: var(--rose-gold);
+      letter-spacing: .08em;
+      opacity: 0;
+      animation: fadeUp .8s .15s ease forwards;
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-align: center;
+      background: linear-gradient(135deg, var(--deep-rose) 0%, var(--gold) 55%, var(--rose-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 14px #e8a0b044);
+      margin: 8px 0 6px;
+      opacity: 0;
+      animation: fadeUp .9s .3s ease forwards;
+    }
+
+    /* ── Gold divider ── */
+    .divider {
+      margin: 14px auto 44px;
+      opacity: 0;
+      animation: fadeUp .8s .45s ease forwards;
+    }
+    .divider svg { width: 260px; max-width: 85vw; }
+
+    /* ── Voice card ── */
+    .voice-card {
+      position: relative;
+      width: min(560px, 92vw);
+      background: linear-gradient(145deg, #fff8faee, #fce4ec55);
+      border: 1px solid #d4a96a44;
+      border-radius: 4px;
+      padding: 48px 44px 44px;
+      text-align: center;
+      box-shadow: 0 12px 48px #c0637a18, 0 2px 8px #00000010;
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      animation: fadeUp 1s .6s ease forwards;
+    }
+
+    /* Corner decorations */
+    .voice-card::before, .voice-card::after {
+      content: '';
+      position: absolute;
+      width: 26px; height: 26px;
+      border-color: var(--gold);
+      border-style: solid;
+    }
+    .voice-card::before { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
+    .voice-card::after  { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+
+    /* ── Mic icon area ── */
+    .mic-wrap {
+      width: 90px; height: 90px;
+      margin: 0 auto 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blush), var(--light-gold));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 24px #c0637a22;
+      font-size: 2.6rem;
+      position: relative;
+    }
+    .mic-wrap.playing::after {
+      content: '';
+      position: absolute; inset: -6px;
+      border-radius: 50%;
+      border: 2px solid #d4a96a66;
+      animation: ripple 1.4s ease-out infinite;
+    }
+    .mic-wrap.playing::before {
+      content: '';
+      position: absolute; inset: -14px;
+      border-radius: 50%;
+      border: 1.5px solid #d4a96a33;
+      animation: ripple 1.4s .4s ease-out infinite;
+    }
+    @keyframes ripple {
+      0%   { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+
+    /* ── Message above player ── */
+    .voice-intro {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-style: italic;
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--dark);
+      margin-bottom: 32px;
+      letter-spacing: .02em;
+    }
+    .voice-intro strong {
+      font-style: normal;
+      font-weight: 400;
+      color: var(--rose-gold);
+    }
+
+    /* ── Waveform visual ── */
+    .waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 44px;
+      margin: 0 auto 26px;
+    }
+    .wave-bar {
+      width: 4px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, var(--deep-rose), var(--gold));
+      opacity: .35;
+      transition: height .15s ease;
+    }
+    .waveform.active .wave-bar {
+      animation: waveDance .8s ease-in-out infinite;
+      opacity: 1;
+    }
+    .wave-bar:nth-child(1)  { height: 12px; animation-delay: 0s !important; }
+    .wave-bar:nth-child(2)  { height: 22px; animation-delay: .1s !important; }
+    .wave-bar:nth-child(3)  { height: 34px; animation-delay: .2s !important; }
+    .wave-bar:nth-child(4)  { height: 44px; animation-delay: .3s !important; }
+    .wave-bar:nth-child(5)  { height: 30px; animation-delay: .15s !important; }
+    .wave-bar:nth-child(6)  { height: 44px; animation-delay: .25s !important; }
+    .wave-bar:nth-child(7)  { height: 38px; animation-delay: .05s !important; }
+    .wave-bar:nth-child(8)  { height: 26px; animation-delay: .35s !important; }
+    .wave-bar:nth-child(9)  { height: 18px; animation-delay: .1s !important; }
+    .wave-bar:nth-child(10) { height: 34px; animation-delay: .2s !important; }
+    .wave-bar:nth-child(11) { height: 44px; animation-delay: .3s !important; }
+    .wave-bar:nth-child(12) { height: 28px; animation-delay: .15s !important; }
+    .wave-bar:nth-child(13) { height: 16px; animation-delay: .0s !important; }
+    @keyframes waveDance {
+      0%, 100% { transform: scaleY(1); }
+      50%       { transform: scaleY(.4); }
+    }
+
+    /* ── Custom audio player ── */
+    .player-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(135deg, #fff0f4, #fce4ec88);
+      border: 1px solid #d4a96a33;
+      border-radius: 50px;
+      padding: 12px 22px;
+    }
+
+    /* Play/pause button */
+    .play-btn {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--deep-rose), var(--rose-gold), var(--gold));
+      background-size: 200%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 18px #c0637a44;
+      transition: transform .25s ease, box-shadow .25s ease;
+      animation: gradShift 3s ease infinite;
+    }
+    .play-btn:hover { transform: scale(1.1); box-shadow: 0 8px 28px #c0637a55; }
+    .play-btn svg { width: 22px; height: 22px; fill: #fff; margin-left: 3px; }
+    .play-btn.playing svg { margin-left: 0; }
+
+    /* Progress bar */
+    .progress-wrap {
+      flex: 1;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .progress-track {
+      width: 100%; height: 5px;
+      background: #f0d9b566;
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--deep-rose), var(--gold));
+      border-radius: 10px;
+      transition: width .3s linear;
+    }
+    .time-row {
+      display: flex; justify-content: space-between;
+      font-size: .78rem;
+      color: var(--rose-gold);
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: .04em;
+    }
+
+    /* ── Poem / message below ── */
+    .poem-wrap {
+      margin-top: 44px;
+      max-width: 520px;
+      text-align: center;
+      opacity: 0;
+      animation: fadeUp .9s 1s ease forwards;
+    }
+    .poem-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      color: var(--rose-gold);
+      margin-bottom: 18px;
+    }
+    .poem-text {
+      font-size: clamp(1rem, 2.4vw, 1.3rem);
+      font-style: italic;
+      font-weight: 300;
+      line-height: 2;
+      color: var(--dark);
+      letter-spacing: .02em;
+    }
+    .poem-text .line { display: block; }
+    .poem-sign {
+      margin-top: 20px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.25rem;
+      color: var(--gold);
+    }
+
+    /* ── Nav ── */
+    .nav-row {
+      margin-top: 56px;
+      display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+      opacity: 0;
+      animation: fadeUp .8s 1.2s ease forwards;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 13px 36px;
+      font-family: 'Cinzel', serif;
+      font-size: .78rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 1px;
+      transition: transform .3s ease, box-shadow .3s ease;
+      cursor: pointer;
+    }
+    .nav-btn.primary {
+      color: var(--cream);
+      background: linear-gradient(135deg, var(--deep-rose), var(--rose-gold), var(--gold));
+      background-size: 200% 200%;
+      animation: gradShift 3s 2s ease infinite;
+      box-shadow: 0 4px 24px #c0637a44;
+    }
+    .nav-btn.ghost {
+      color: var(--rose-gold);
+      border: 1px solid #d4a96a88;
+      background: transparent;
+    }
+    .nav-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px #c0637a44; }
+
+    /* ── Transition overlay ── */
+    .transition-overlay {
+      position: fixed; inset: 0; z-index: 9990;
+      background: linear-gradient(135deg, var(--blush), var(--rose-gold));
+      transform: scaleY(0); transform-origin: bottom;
+      pointer-events: none;
+    }
+    .transition-overlay.active {
+      animation: curtainIn .7s cubic-bezier(.77,0,.18,1) forwards;
+    }
+
+    /* ── Keyframes ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(26px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes curtainIn {
+      from { transform: scaleY(0); transform-origin: bottom; }
+      to   { transform: scaleY(1); transform-origin: bottom; }
+    }
+    @keyframes gradShift {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+
+    @media (max-width: 480px) {
+      .voice-card { padding: 36px 22px 32px; }
+      .player-wrap { padding: 10px 14px; gap: 12px; }
+    }
+  </style>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="transition-overlay" id="overlay"></div>
+  <canvas id="petalCanvas"></canvas>
+  <canvas id="glitterCanvas"></canvas>
+  <div class="notes-wrap" id="notesWrap"></div>
+
+  <main class="page">
+
+    <p class="section-label">✦ close your eyes & listen ✦</p>
+    <h2 class="section-title">A VOICE NOTE FROM ZEBA</h2>
+
+    <div class="divider">
+      <svg viewBox="0 0 260 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="10" x2="98" y2="10" stroke="#d4a96a" stroke-width=".8" opacity=".7"/>
+        <circle cx="110" cy="10" r="3" fill="#d4a96a" opacity=".85"/>
+        <circle cx="130" cy="10" r="5.5" fill="#d4a96a"/>
+        <circle cx="150" cy="10" r="3" fill="#d4a96a" opacity=".85"/>
+        <line x1="162" y1="10" x2="260" y2="10" stroke="#d4a96a" stroke-width=".8" opacity=".7"/>
+      </svg>
+    </div>
+
+    <!-- Voice card -->
+    <div class="voice-card">
+
+      <!-- Mic icon -->
+      <div class="mic-wrap" id="micWrap">🎙️</div>
+
+      <!-- Intro message -->
+      <p class="voice-intro">
+        Hey <strong>Vishesh</strong> 🌹<br/>
+        I recorded something just for you —<br/>
+        straight from my heart, no filters, no edits.<br/>
+        Just me, wishing you the most beautiful birthday.<br/>
+        Press play & let it find you. 💌
+      </p>
+
+      <!-- Animated waveform -->
+      <div class="waveform" id="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+
+      <!-- Custom player -->
+      <div class="player-wrap">
+        <button class="play-btn" id="playBtn" aria-label="Play voice note">
+          <!-- Play icon -->
+          <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <!-- Pause icon (hidden) -->
+          <svg id="iconPause" viewBox="0 0 24 24" style="display:none;margin-left:0"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+
+        <div class="progress-wrap">
+          <div class="progress-track" id="progressTrack">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="time-row">
+            <span id="timeElapsed">0:00</span>
+            <span id="timeDuration">0:00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden audio -->
+      <audio id="voiceAudio" preload="metadata">
+        <source src="voice-note.mp3" type="audio/mpeg"/>
+      </audio>
+
+    </div>
+
+    <!-- Poem / message -->
+    <div class="poem-wrap">
+      <p class="poem-title">🎵 what my voice carries for you…</p>
+      <p class="poem-text">
+        <span class="line">Some words are too soft for typing,</span>
+        <span class="line">too warm for a screen to hold —</span>
+        <span class="line">so I wrapped them in my voice instead,</span>
+        <span class="line">and sent them straight to your soul.</span>
+        <br/>
+        <span class="line">Happy Birthday, my favourite person. 🌹</span>
+      </p>
+      <p class="poem-sign">— always yours, Zeba ✨</p>
+    </div>
+
+    <!-- Nav -->
+    <div class="nav-row">
+      <a href="page2.html" class="nav-btn ghost" id="backBtn">← Back</a>
+      <a href="page4.html" class="nav-btn primary" id="nextBtn">Next Page ✦</a>
+    </div>
+
+  </main>
+
+  <script>
+    /* ── Cursor ── */
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+
+    /* ── Canvas setup ── */
+    const petalCanvas   = document.getElementById('petalCanvas');
+    const glitterCanvas = document.getElementById('glitterCanvas');
+    const pCtx = petalCanvas.getContext('2d');
+    const gCtx = glitterCanvas.getContext('2d');
+    function resizeCanvases() {
+      petalCanvas.width = glitterCanvas.width = window.innerWidth;
+      petalCanvas.height = glitterCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
+
+    /* ── Petals ── */
+    const petalColors = ['#f7c5d0','#e8a0b0','#d4a96a','#f0d9b5','#fce4ec','#b76e79'];
+    let petals = [];
+    function createPetal() {
+      return {
+        x: Math.random() * petalCanvas.width, y: -20,
+        r: 6 + Math.random() * 10,
+        color: petalColors[Math.floor(Math.random() * petalColors.length)],
+        speed: .5 + Math.random() * 1.1,
+        wind: (Math.random() - .5) * .7,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - .5) * .05,
+        opacity: .45 + Math.random() * .5,
+      };
+    }
+    for (let i = 0; i < 38; i++) { const p = createPetal(); p.y = Math.random() * petalCanvas.height; petals.push(p); }
+    function animatePetals() {
+      pCtx.clearRect(0, 0, petalCanvas.width, petalCanvas.height);
+      petals.forEach((p, i) => {
+        p.y += p.speed; p.x += p.wind + Math.sin(p.angle * 2) * .35; p.angle += p.spin;
+        if (p.y > petalCanvas.height + 20) petals[i] = createPetal();
+        pCtx.save(); pCtx.translate(p.x, p.y); pCtx.rotate(p.angle);
+        pCtx.globalAlpha = p.opacity;
+        pCtx.beginPath(); pCtx.ellipse(0, 0, p.r, p.r * .55, 0, 0, Math.PI * 2);
+        pCtx.fillStyle = p.color; pCtx.fill(); pCtx.restore();
+      });
+      requestAnimationFrame(animatePetals);
+    }
+    animatePetals();
+
+    /* ── Glitter ── */
+    let sparkles = [];
+    function createSparkle() {
+      return {
+        x: Math.random() * glitterCanvas.width, y: Math.random() * glitterCanvas.height,
+        r: .5 + Math.random() * 2.5, life: 0,
+        maxLife: 40 + Math.random() * 60,
+        color: ['#d4a96a','#f0d9b5','#f7c5d0','#ffffff','#b76e79'][Math.floor(Math.random()*5)],
+      };
+    }
+    for (let i = 0; i < 80; i++) sparkles.push(createSparkle());
+    function animateGlitter() {
+      gCtx.clearRect(0, 0, glitterCanvas.width, glitterCanvas.height);
+      sparkles.forEach((s, i) => {
+        s.life++;
+        const alpha = s.life / s.maxLife < .5 ? (s.life / s.maxLife) * 2 : (1 - s.life / s.maxLife) * 2;
+        gCtx.save(); gCtx.globalAlpha = alpha * .85; gCtx.fillStyle = s.color;
+        gCtx.shadowColor = s.color; gCtx.shadowBlur = 6;
+        gCtx.beginPath();
+        for (let j = 0; j < 8; j++) {
+          const rad = j % 2 === 0 ? s.r : s.r * .4;
+          const ang = (j * Math.PI) / 4;
+          j === 0 ? gCtx.moveTo(s.x + rad * Math.cos(ang), s.y + rad * Math.sin(ang))
+                  : gCtx.lineTo(s.x + rad * Math.cos(ang), s.y + rad * Math.sin(ang));
+        }
+        gCtx.closePath(); gCtx.fill(); gCtx.restore();
+        if (s.life >= s.maxLife) sparkles[i] = createSparkle();
+      });
+      requestAnimationFrame(animateGlitter);
+    }
+    animateGlitter();
+
+    /* ── Floating music notes ── */
+    const notesWrap  = document.getElementById('notesWrap');
+    const noteSymbols = ['♩','♪','♫','♬','🎵','🎶','🎼'];
+    function spawnNote() {
+      const el = document.createElement('div');
+      el.className = 'music-note';
+      el.textContent = noteSymbols[Math.floor(Math.random() * noteSymbols.length)];
+      el.style.cssText = `
+        left: ${4 + Math.random() * 92}%;
+        font-size: ${1 + Math.random() * 1.4}rem;
+        animation-duration: ${7 + Math.random() * 9}s;
+        animation-delay: ${Math.random() * 3}s;
+        color: ${['#d4a96a','#e8a0b0','#b76e79','#c0637a'][Math.floor(Math.random()*4)]};
+        opacity: 0;
+      `;
+      notesWrap.appendChild(el);
+      setTimeout(() => el.remove(), 16000);
+    }
+    for (let i = 0; i < 12; i++)
